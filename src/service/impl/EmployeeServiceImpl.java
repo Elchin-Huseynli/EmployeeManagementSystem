@@ -1,5 +1,6 @@
 package service.impl;
 
+import enums.SuccessMessageEnum;
 import exceptions.EmployeeNotFoundExceptions;
 import exceptions.InvalidIdExceptions;
 import exceptions.InvalidParameterExceptions;
@@ -8,33 +9,9 @@ import model.Employee;
 import service.EmployeeService;
 import java.time.*;
 import static util.InputUtil.*;
+import static service.impl.EmployeeHelperService.*;
 
 public class EmployeeServiceImpl implements EmployeeService {
-
-    static long id = 0;
-
-    static LocalDate birthdayDate() {
-        String birthday = InputTypeString("Enter the birthday(dd/MM/yyyy): ");
-        String[] strArr = birthday.split("/");
-        int day = Integer.parseInt(strArr[0]);
-        int month = Integer.parseInt(strArr[1]);
-        int year = Integer.parseInt(strArr[2]);
-        LocalDate date = LocalDate.of(year,month,day);
-
-        return date;
-    }
-    static Employee fillEmployee() {
-        String name = InputTypeString("Enter the name: ");
-        String surname = InputTypeString("Enter the surname: ");
-        LocalDate birthday = birthdayDate();
-        String department = InputTypeString("Enter the department: ");
-        String position = InputTypeString("Enter the position: ");
-        long salary = InputTypeLong("Enter the salary: ");
-
-        Employee employee = new Employee(++id,name,surname,birthday,department,position,salary);
-        return employee;
-    }
-
     @Override
     public boolean register() {
             int count = InputTypeInt("How many employee register: ");
@@ -64,7 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     System.out.println("-------------------");
                 }
             }
-            System.out.println("Registered successful!");
+            System.out.println("\n" + SuccessMessageEnum.REGISTER_SUCCESSFULLY);
             System.out.println("Total employee: " + GlobalData.employees.length + "\n");
 
         return false;
@@ -72,7 +49,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void showEmployee() throws EmployeeNotFoundExceptions {
-        if (GlobalData.employees == null) {
+        if (GlobalData.employees == null || GlobalData.employees.length == 0) {
             throw new EmployeeNotFoundExceptions();
         }
         else {
@@ -87,21 +64,23 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void findByName() throws EmployeeNotFoundExceptions {
-        if (GlobalData.employees == null) {
+        boolean isFind = false;
+        if (GlobalData.employees == null || GlobalData.employees.length == 0) {
             throw new EmployeeNotFoundExceptions();
         }
         else {
             String name = InputTypeString("Enter the name: ");
             for (int i = 0; i < GlobalData.employees.length; i++) {
                 if (GlobalData.employees[i].getName().contains(name)) {
+                    isFind = true;
                     System.out.println("-------------------");
                     System.out.println(i+1 + ". Employee");
                     System.out.println(GlobalData.employees[i]);
                     System.out.println("-------------------");
                 }
-//                else {
-//                    throw new EmployeeNotFoundExceptions();
-//                }
+            }
+            if (isFind == false) {
+                throw new EmployeeNotFoundExceptions();
             }
         }
     }
@@ -109,7 +88,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public boolean update() throws EmployeeNotFoundExceptions, InvalidIdExceptions, InvalidParameterExceptions {
             boolean isUpdated = false;
-        if (GlobalData.employees == null) {
+        if (GlobalData.employees == null || GlobalData.employees.length == 0) {
             throw new EmployeeNotFoundExceptions();
         }
         else {
@@ -145,15 +124,16 @@ public class EmployeeServiceImpl implements EmployeeService {
                         }
                     }
                     if (isUpdated == true) {
-                        System.out.println("\nUpdate successfully!");
+                        System.out.println("\n" + SuccessMessageEnum.UPDATE_SUCCESSFULLY);
+                        GlobalData.employees[i].setUpdateDate(LocalDateTime.now().withNano(0));
                     }
-                    else if (isUpdated == false) {
+                    else {
                         throw new InvalidParameterExceptions();
                     }
                 }
-//                else {
-//                    throw new InvalidIdExceptions();
-//                }
+            }
+            if (isUpdated == false) {
+                throw new InvalidIdExceptions();
             }
         }
         return isUpdated;
@@ -162,29 +142,28 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public boolean delete() throws EmployeeNotFoundExceptions, InvalidIdExceptions {
         boolean isDeleted = false;
-        if (GlobalData.employees == null) {
+        if (GlobalData.employees == null || GlobalData.employees.length == 0) {
             throw new EmployeeNotFoundExceptions();
         }
         else {
             int id = InputTypeInt("Which employee do you want to delete: ");
-            for (int i = 0; i < GlobalData.employees.length; i++) {
-                if (GlobalData.employees[i].getId() == id) {
-                    Employee[] tempEmployee = GlobalData.employees;
-                    GlobalData.employees = new Employee[tempEmployee.length-1];
-                    for (int j = 0; j < tempEmployee.length; j++) {
-                        if (tempEmployee[j].getId() == id) {
+            for (Employee employee : GlobalData.employees) {
+                if (employee.getId() == id) {
+                    Employee[] tempEmployees = GlobalData.employees;
+                    GlobalData.employees = new Employee[tempEmployees.length-1];
+                    int k = 0;
+                    for (Employee tempEmployee : tempEmployees) {
+                        if (tempEmployee.getId() == id) {
                             continue;
                         }
-                        GlobalData.employees[j] = tempEmployee[j];
+                        GlobalData.employees[k] = tempEmployee;
+                        k++;
                     }
                     isDeleted = true;
                 }
-                else {
-                    isDeleted=false;
-                }
             }
             if (isDeleted == true) {
-                System.out.println("\nDeleted successfully!");
+                System.out.println("\n" + SuccessMessageEnum.DELETE_SUCCESSFULLY);
             }
             else {
                 throw new InvalidIdExceptions();

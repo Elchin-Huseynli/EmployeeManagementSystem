@@ -1,6 +1,9 @@
 package service.impl;
+import enums.ExceptionEnum;
+import enums.SuccessMessageEnum;
 import exceptions.EmployeeNotFoundExceptions;
 import exceptions.InvalidIdExceptions;
+import exceptions.InvalidOptionExceptions;
 import exceptions.InvalidParameterExceptions;
 import service.ManagementService;
 
@@ -18,55 +21,45 @@ public class ManagementServiceImpl implements ManagementService {
                     int option = entryApp();
                     switch (option) {
                         case 0:
-                            System.out.println("Good bye!");
+                            System.out.println(SuccessMessageEnum.GOOD_BYE);
                             System.exit(-1);
                         case 1:
                             employeeService.register();
                             break;
                         case 2:
-                            try {
-                                employeeService.showEmployee();
-                            } catch (EmployeeNotFoundExceptions e) {
-                                System.out.println(e.getMessage());
-                            }
+                            employeeService.showEmployee();
                             break;
                         case 3:
-                            try {
-                                employeeService.update();
-                            } catch (EmployeeNotFoundExceptions e) {
-                                System.out.println(e.getMessage());
-                            } catch (InvalidIdExceptions e) {
-                                System.out.println(e.getMessage());
-                            } catch (InvalidParameterExceptions e) {
-                                System.out.println(e.getMessage());
-                            }
+                            employeeService.update();
                             break;
                         case 4:
-                            try {
-                                employeeService.delete();
-                            } catch (EmployeeNotFoundExceptions e) {
-                                System.out.println(e.getMessage());
-                            } catch (InvalidIdExceptions e) {
-                                System.out.println(e.getMessage());
-                            }
+                            employeeService.delete();
                             break;
                         case 5:
-                            try {
-                                employeeService.findByName();
-                            } catch (EmployeeNotFoundExceptions e) {
-                                System.out.println(e.getMessage());
-                            }
+                            employeeService.findByName();
                             break;
                         case 6:
                             employeeService.totalEmployee();
                             break;
                         default:
-                            System.err.println("\nInvalid option!");
+                            throw new InvalidOptionExceptions();
                     }
                 }
             }
+            catch (EmployeeNotFoundExceptions e) {
+                System.out.println(e.getMessage());
+            }
+            catch (InvalidIdExceptions e) {
+                System.out.println(e.getMessage());
+            }
+            catch (InvalidParameterExceptions e) {
+                System.out.println(e.getMessage());
+            }
+            catch (InvalidOptionExceptions e) {
+                System.out.println(e.getMessage());
+            }
             catch (InputMismatchException e) {
-                System.out.println("\nMust be an int value!");
+                System.out.println("\n" + ExceptionEnum.MUST_BE_AN_INT_VALUE);
             }
         }
     }

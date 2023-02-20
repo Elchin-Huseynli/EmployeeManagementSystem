@@ -1,23 +1,28 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Employee extends Personal{
     private long id;
     private String department;
     private String position;
     private long salary;
+    private LocalDateTime createDate;
+    private LocalDateTime updateDate;
 
     public Employee() {
         ++this.id;
     }
 
-    public Employee(long id, String name, String surname, LocalDate birthday, String department, String position, long salary) {
+    public Employee(long id, String name, String surname, LocalDate birthday, String department, String position, long salary, LocalDateTime createDate, LocalDateTime updateDate) {
         super(name, surname, birthday);
         this.id = id;
         this.department = department;
         this.position = position;
         this.salary = salary;
+        this.createDate = createDate;
+        this.updateDate = updateDate;
     }
 
     public long getId() {
@@ -49,6 +54,22 @@ public class Employee extends Personal{
         this.salary = salary;
     }
 
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
+    }
+
     @Override
     public String toString() {
         return "Name: " + getName() +
@@ -56,6 +77,8 @@ public class Employee extends Personal{
                 "\nBirthday: " + getBirthday() +
                 "\nDepartment: " + getDepartment() +
                 "\nPosition: " + getPosition() +
-                "\nSalary: " + getSalary();
+                "\nSalary: " + getSalary() +
+                "\nCreate date: " + getCreateDate() +
+                "\nUpdate date: " + getUpdateDate();
     }
 }
